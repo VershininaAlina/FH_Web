@@ -23,6 +23,7 @@ public class BaseTest {
     public FooterPage footerPage;
     WebDriver driver;
 
+
     @BeforeMethod
     public void setup(@Optional("chrome") String browser) {
         if (browser.equalsIgnoreCase("chrome")) {

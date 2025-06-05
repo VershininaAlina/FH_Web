@@ -1,8 +1,8 @@
-name: FlyHigh CI with Allure
+name: FlyHigh
 
 on:
   push:
-    branches: ["master"]
+    branches: ["master"]  # Триггер на пуши в master
   pull_request:
     branches: ["master"]
 
@@ -11,8 +11,7 @@ env:
   PASSWORD: ${{ secrets.PASSWORD }}
 
 permissions:
-  contents: read
-  actions: write  # Необходимо для загрузки артефактов
+  contents: write  # Необходимо для публикации на GitHub Pages
 
 jobs:
   build:
@@ -29,16 +28,17 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Run tests with Maven
+      - name: Run tests
         run: mvn clean test -Duser=$USERNAME -Dpassword=$PASSWORD
 
       - name: Generate Allure Report
-        if: always()
+        if: always()  # Генерировать даже если тесты упали
         run: mvn allure:report
 
-      - name: Upload Allure Report
-        if: always()
-        uses: actions/upload-artifact@v4  # Используем последнюю версию v4
+      - name: Deploy Allure Report to GitHub Pages
+        if: success()  # Публиковать только если тесты прошли
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          name: allure-report
-          path: target/site/allure-maven-plugin
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: target/site/allure-maven-plugin
+          destination_dir: allure-report  # Папка в gh-pages

@@ -18,7 +18,7 @@ public class FooterTest extends BaseTest {
     @Story("Footer")
     public void check_logo_footers() throws InterruptedException {
         FooterPage.openFooter();
-        FooterPage.loginInModalWindow("dev", "test.dev.2023");
+        FooterPage.loginInModalWindow(user, password);
         FooterPage.scrollToFooter();
         Assert.assertTrue(FooterPage.isLogoDisplayed());
     }
@@ -31,7 +31,7 @@ public class FooterTest extends BaseTest {
     @Story("Footer")
     public void check_text_company_footers() throws InterruptedException {
         FooterPage.openFooter();
-        FooterPage.loginInModalWindow("dev", "test.dev.2023");
+        FooterPage.loginInModalWindow(user, password);
         FooterPage.scrollToFooter();
         Assert.assertEquals(isCompanyTextCorrect(), "Подбор, бронирование и продажа туров от крупнейших туроператоров России — по вашим предпочтениям");
     }
@@ -44,7 +44,7 @@ public class FooterTest extends BaseTest {
     @Story("Footer")
     public void check_social_service_footers() throws InterruptedException {
         FooterPage.openFooter();
-        FooterPage.loginInModalWindow("dev", "test.dev.2023");
+        FooterPage.loginInModalWindow(user, password);
         FooterPage.scrollToFooter();
         Assert.assertTrue(FooterPage.checkSMME());
     }
@@ -57,7 +57,7 @@ public class FooterTest extends BaseTest {
     @Story("Footer")
     public void check_phone_footers() throws InterruptedException {
         FooterPage.openFooter();
-        FooterPage.loginInModalWindow("dev", "test.dev.2023");
+        FooterPage.loginInModalWindow(user, password);
         FooterPage.scrollToFooter();
         Assert.assertEquals(FooterPage.checkPhone(), "+7 (499) 755-94-89");
     }
@@ -70,7 +70,7 @@ public class FooterTest extends BaseTest {
     @Story("Footer")
     public void check_adress_footers() throws InterruptedException {
         FooterPage.openFooter();
-        FooterPage.loginInModalWindow("dev", "test.dev.2023");
+        FooterPage.loginInModalWindow(user, password);
         FooterPage.scrollToFooter();
         Assert.assertEquals(FooterPage.checkAdress(), "129226, Москва, Сельскохозяйственная ул., д.30, ст.1, пом. 19");
     }
@@ -83,7 +83,7 @@ public class FooterTest extends BaseTest {
     @Story("Footer")
     public void check_email_footers() throws InterruptedException {
         FooterPage.openFooter();
-        FooterPage.loginInModalWindow("dev", "test.dev.2023");
+        FooterPage.loginInModalWindow(user, password);
         FooterPage.scrollToFooter();
         Assert.assertEquals(FooterPage.checkEmail(), "onlinebooking@fly-high.ru");
     }
@@ -96,7 +96,7 @@ public class FooterTest extends BaseTest {
     @Story("Footer")
     public void check_main_block() throws InterruptedException {
         FooterPage.openFooter();
-        FooterPage.loginInModalWindow("dev", "test.dev.2023");
+        FooterPage.loginInModalWindow(user, password);
         FooterPage.scrollToFooter();
         Assert.assertEquals(FooterPage.checkMainBlock(), true);
     }

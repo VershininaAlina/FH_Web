@@ -12,7 +12,7 @@ env:
 
 permissions:
   contents: read
-  # dependency-submission: write  # Раскомментируйте если нужен Dependency Graph
+  actions: write  # Необходимо для загрузки артефактов
 
 jobs:
   build:
@@ -33,27 +33,12 @@ jobs:
         run: mvn clean test -Duser=$USERNAME -Dpassword=$PASSWORD
 
       - name: Generate Allure Report
-        if: always()  # Генерировать отчет даже если тесты упали
-        run: |
-          mvn allure:report
-          echo "ALLURE_RESULTS_DIR=target/allure-results" >> $GITHUB_ENV
+        if: always()
+        run: mvn allure:report
 
       - name: Upload Allure Report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4  # Используем последнюю версию v4
         with:
           name: allure-report
           path: target/site/allure-maven-plugin
-
-
-      - name: Publish Allure Report
-        if: always()
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: target/site/allure-maven-plugin
-          destination_dir: allure-report
-
-    # Опционально: Dependency Graph (раскомментируйте если нужно)
-    # - name: Update dependency graph
-    #   uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6

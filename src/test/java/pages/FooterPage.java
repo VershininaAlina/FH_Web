@@ -70,7 +70,7 @@ public class FooterPage {
     @Step("Проверка наличия всех соц сетей футера")
     public static boolean checkSMME() {
         boolean flag = true;
-        if (driver.findElement(FOR_TURIST).isDisplayed() == false) {
+        if (driver.findElement(VK_FOOTER).isDisplayed() == false) {
             flag = false;
         }
         if (driver.findElement(POPULAR_LINE).isDisplayed() == false) {
@@ -109,7 +109,8 @@ public class FooterPage {
         }
 
         @Step("Вход в модальном окне с логином '{user}' и паролем '{password}'")
-        public static void loginInModalWindow (String user, String password){
+        public static void loginInModalWindow (String user, String password) throws InterruptedException {
+            Thread.sleep(500);
             try {
                 Robot robot = new Robot();
                 typeString(robot, user);

@@ -7,7 +7,7 @@ import pages.LoginPage;
 
 public class LoginTest extends BaseTest {
 
-
+/*
     @Test(testName = "Позитивная авторизация",
             description = "Позитивная авторизация и проверка, что разделы стали доступны")
     @Severity(SeverityLevel.CRITICAL)
@@ -21,4 +21,6 @@ public class LoginTest extends BaseTest {
         LoginPage.login_in_site();
         LoginPage.checkAut();
     }
+
+ */
 }

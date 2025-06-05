@@ -11,10 +11,13 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Optional;
 import pages.FooterPage;
 import pages.LoginPage;
+import utils.PropertyReader;
 
 import java.time.Duration;
 
 public class BaseTest {
+    public static String user = System.getProperty("user", PropertyReader.getProperty("user"));
+    public static String password = System.getProperty("password", PropertyReader.getProperty("password"));
     public static WebDriverWait wait;
     public LoginPage loginPage;
     public FooterPage footerPage;

@@ -2,7 +2,7 @@ name: FlyHigh
 
 on:
   push:
-    branches: ["master"]  # Триггер на пуши в master
+    branches: ["master"]
   pull_request:
     branches: ["master"]
 
@@ -11,7 +11,7 @@ env:
   PASSWORD: ${{ secrets.PASSWORD }}
 
 permissions:
-  contents: write  # Необходимо для публикации на GitHub Pages
+  contents: write
 
 jobs:
   build:
@@ -28,16 +28,42 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Run tests
-        run: mvn clean test -Duser=$USERNAME -Dpassword=$PASSWORD
+      - name: Run tests with Allure
+        run: |
+          mvn clean test -Duser=$USERNAME -Dpassword=$PASSWORD
+          # Явно указываем папку для результатов Allure
+          mkdir -p target/allure-results
+          cp -r target/surefire-reports/* target/allure-results/ || true
+
+      - name: Prepare Allure history
+        if: always()
+        run: |
+          mkdir -p target/allure-results/history
+          # Пробуем скопировать историю из предыдущего отчета
+          cp -r target/site/allure-maven-plugin/history target/allure-results/ 2>/dev/null || true
 
       - name: Generate Allure Report
-        if: always()  # Генерировать даже если тесты упали
-        run: mvn allure:report
+        if: always()
+        run: |
+          # Явно указываем папку с результатами
+          mvn allure:report -Dallure.results.directory=target/allure-results
+          # Создаем index.html в корне
+          cp target/site/allure-maven-plugin/index.html target/site/
 
-      - name: Deploy Allure Report
+      - name: Verify report files
+        run: ls -la target/site/allure-maven-plugin
+
+      - name: Deploy Allure Report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: target/site/allure-maven-plugin  # исходная папка с отчётом
-          destination_dir: /  # загружаем в корень gh-pages
+          publish_dir: target/site
+          destination_dir: allure-report
+          keep_files: true  # Сохраняем предыдущие версии отчетов
+
+      - name: Upload Allure Report as artifact
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: allure-report
+          path: target/site/allure-maven-plugin

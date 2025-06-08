@@ -31,39 +31,46 @@ jobs:
       - name: Run tests with Allure
         run: |
           mvn clean test -Duser=$USERNAME -Dpassword=$PASSWORD
-          # Явно указываем папку для результатов Allure
           mkdir -p target/allure-results
-          cp -r target/surefire-reports/* target/allure-results/ || true
+          # Копируем результаты тестов в папку Allure
+          find target/surefire-reports -name "*.xml" -exec cp {} target/allure-results/ \;
 
       - name: Prepare Allure history
         if: always()
         run: |
           mkdir -p target/allure-results/history
-          # Пробуем скопировать историю из предыдущего отчета
-          cp -r target/site/allure-maven-plugin/history target/allure-results/ 2>/dev/null || true
+          # Копируем историю из предыдущего отчета, если есть
+          cp -r target/site/allure-maven-plugin/history target/allure-results/ 2>/dev/null || echo "No history found"
 
       - name: Generate Allure Report
         if: always()
         run: |
-          # Явно указываем папку с результатами
           mvn allure:report -Dallure.results.directory=target/allure-results
-          # Создаем index.html в корне
-          cp target/site/allure-maven-plugin/index.html target/site/
+          # Создаем симлинк для index.html в корне
+          ln -sf allure-maven-plugin/index.html target/site/index.html
 
-      - name: Verify report files
-        run: ls -la target/site/allure-maven-plugin
+      - name: Verify report structure
+        run: |
+          ls -la target/site/
+          ls -la target/site/allure-maven-plugin/
 
       - name: Deploy Allure Report to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: target/site
-          destination_dir: allure-report
-          keep_files: true  # Сохраняем предыдущие версии отчетов
+          destination_dir: ./  # Публикуем в корень gh-pages
+          keep_files: true
 
       - name: Upload Allure Report as artifact
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: allure-report
           path: target/site/allure-maven-plugin
+          retention-days: 7
+
+      - name: Show Report URL
+        run: |
+          echo "Allure Report URL: https://${{ github.repository_owner }}.github.io/${{ github.repository }}/"
+          echo "Direct link to report: https://${{ github.repository_owner }}.github.io/${{ github.repository }}/allure-maven-plugin/index.html"

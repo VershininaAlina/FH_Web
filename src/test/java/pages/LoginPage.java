@@ -81,7 +81,6 @@ public class LoginPage {
             //Thread.sleep(3000);
             robot.keyPress(KeyEvent.VK_ENTER);
             robot.keyRelease(KeyEvent.VK_ENTER);
-          //  Thread.sleep(2000);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -96,7 +95,6 @@ public class LoginPage {
         String code = driver.findElement(CODE).getText();
         System.out.println(code);
         return code.split("");
-
 
     }
 

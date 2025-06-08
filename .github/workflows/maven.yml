@@ -27,14 +27,42 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Run tests with Allure listener
+      - name: Run tests
         run: |
-          mvn clean test -Duser=$USERNAME -Dpassword=$PASSWORD \
-          -Dallure.results.directory=target/allure-results
+          mvn clean test -Duser=$USERNAME -Dpassword=$PASSWORD
 
+      # Новый шаг: Подготовка Allure результатов
+      - name: Prepare Allure results
+        run: |
+          mkdir -p target/allure-results
+          # Копируем результаты из surefire-reports в allure-results
+          find target/surefire-reports -name "*.xml" -exec cp {} target/allure-results/ \;
+
+      # Исправленный шаг верификации
       - name: Verify test results
         run: |
           echo "Allure results files:"
           ls -la target/allure-results/
           echo "Surefire reports:"
-          ls -la target/s
+          ls -la target/surefire-reports/  # Исправлено: target/surefire-reports/
+
+      - name: Generate Allure report
+        if: always()
+        run: |
+          mvn allure:report -Dallure.results.directory=target/allure-results
+          # Создаем симлинк для правильного отображения
+          ln -sf allure-maven-plugin/index.html target/site/index.html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: target/site
+          destination_dir: ./
+          keep_files: true
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: target/site/allure-maven-plugin

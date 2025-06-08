@@ -35,10 +35,9 @@ jobs:
         if: always()  # Генерировать даже если тесты упали
         run: mvn allure:report
 
-      - name: Deploy Allure Report to GitHub Pages
-        if: success()  # Публиковать только если тесты прошли
+      - name: Deploy Allure Report
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: target/site/allure-maven-plugin
-          destination_dir: allure-report  # Папка в gh-pages
+          publish_dir: target/site/allure-maven-plugin  # исходная папка с отчётом
+          destination_dir: /  # загружаем в корень gh-pages

@@ -12,7 +12,6 @@
     </test>
     <test name="Thread#2">
         <classes>
-
         </classes>
     </test>
 </suite>

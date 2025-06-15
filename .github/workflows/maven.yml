@@ -27,22 +27,23 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Clean Maven cache
+        run: mvn dependency:purge-local-repository -DactTransitively=false -DreResolve=false
+
       - name: Run tests with Allure
         run: |
           mvn clean test -Duser=$USERNAME -Dpassword=$PASSWORD -U
 
-      # Шаг верификации результатов (опционально)
       - name: Verify Allure results
         run: |
           echo "Allure results files:"
           ls -la target/allure-results/
 
-      # Исправленный шаг генерации отчета
       - name: Generate Allure report
         if: always()
         run: |
-          # Явное указание плагина с группой
-          mvn io.qameta.allure:allure-maven-plugin:report -Dallure.results.directory=target/allure-results
+          # Используем полный путь к плагину
+          mvn io.qameta.allure:allure-maven-plugin:2.24.0:report -U
           
           # Создаем симлинк для правильного отображения
           ln -sf allure-maven-plugin/index.html target/site/index.html

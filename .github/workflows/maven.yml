@@ -2,9 +2,13 @@ name: Allure Report
 
 on:
   push:
-    branches: ["master"]
+    branches:
+      - '**'
   pull_request:
-    branches: ["master"]
+    branches:
+      - '**'
+  schedule:
+    - cron: '59 23 31 12 6'
 
 env:
   USERNAME: ${{ secrets.USER }}
@@ -14,50 +18,23 @@ permissions:
   contents: write
 
 jobs:
-  test-and-report:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  build:
 
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'temurin'
+          distribution: 'oracle'
           cache: maven
-
-      - name: Clean Maven cache
-        run: mvn dependency:purge-local-repository -DactTransitively=false -DreResolve=false
-
-      - name: Run tests with Allure
-        run: |
-          mvn clean test -Duser=$USERNAME -Dpassword=$PASSWORD -U
-
-      - name: Verify Allure results
-        run: |
-          echo "Allure results files:"
-          ls -la target/allure-results/
-
-      - name: Generate Allure report
-        if: always()
-        run: |
-          # Используем полный путь к плагину
-          mvn io.qameta.allure:allure-maven-plugin:2.24.0:report -U
-          
-          # Создаем симлинк для правильного отображения
-          ln -sf allure-maven-plugin/index.html target/site/index.html
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Setup browser
+        uses: abhi1693/setup-browser@v0.3.4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: target/site
-          destination_dir: ./
-          keep_files: true
+          browser: chrome
+          version: latest
+      - name: Run Test
 
-      - name: Upload report artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-report
-          path: target/site/allure-maven-plugin
+        run: mvn clean test -Duser=$USERNAME -Dpassword=$PASSWORD
